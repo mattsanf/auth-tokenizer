@@ -17,13 +17,13 @@ program.parse(process.argv);
 
 // check API key
 if (API_KEY === null) {
-    return log(chalk.red(`API Key not defined in .env file`));
+    return log(chalk.red('API Key not defined in .env file'));
 }
 
 const sandbox = API_KEY.includes('_sandbox');
 const api = RebillyAPI({apiKey: API_KEY, sandbox});
 const targetURL = program.target || TARGET_URL;
-const endpoint = API_URL ? API_URL : `http://api-sandbox.dev-local.rebilly.com`;
+const endpoint = API_URL ? API_URL : 'http://api-sandbox.dev-local.rebilly.com';
 api.setEndpoints({[sandbox ? 'sandbox' : 'live']: endpoint});
 
 const announce = (title) => {
@@ -32,7 +32,7 @@ const announce = (title) => {
 
 // check URL
 if (targetURL === null) {
-    return log(chalk.red(`Target URL not found`));
+    return log(chalk.red('Target URL not found'));
 }
 
 if (program.open) {
@@ -40,24 +40,63 @@ if (program.open) {
     // TODO
 } else {
     if (!program.customerId) {
-        // TODO add command to create customer
-        return log(chalk.red(`No customer ID provided`));
+        return log(chalk.red('No customer ID provided'));
     }
-    // async wrap
     (async () => {
-        const data = {
-            mode: 'passwordless',
-            customerId: program.customerId,
-        };
         try {
+            const data = {
+                mode: 'passwordless',
+                customerId: program.customerId,
+            };
             const {fields: {token}} = await api.customerAuthentication.login({data});
             announce('Creating Token...');
             log(chalk.yellow(token));
-            announce('Opening Browser...');
-            const redirect = program.redirect ? program.redirect : `https://www.google.ca`;
-            const page = `${targetURL}/?token=${token}&redirectUrl=${redirect}`;
-            log(chalk.yellow(page));
-            await open(page);
+            const {fields: {token: jwt}} = await api.customerAuthentication.exchangeToken({
+                token,
+                data: {
+                    invalidate: false,
+                    acl: [{
+                        scope: {
+                            organizationId: [
+                                '0a2540d2-2285-414d-a677-868bde7e442f'
+                            ],
+                            cashierRequestId: [
+                                'cash_req_01H0QQ5TD4BCT0Z4XVG3R1D3B6'
+                            ]
+                        },
+                        permissions: [
+                            'PostToken',
+                            'PostDigitalWalletValidation',
+                            'StorefrontGetAccount',
+                            'StorefrontPatchAccount',
+                            'StorefrontPostPayment',
+                            'StorefrontGetTransactionCollection',
+                            'StorefrontGetTransaction',
+                            'StorefrontGetPaymentInstrumentCollection',
+                            'StorefrontPostPaymentInstrument',
+                            'StorefrontGetPaymentInstrument',
+                            'StorefrontPatchPaymentInstrument',
+                            'StorefrontPostPaymentInstrumentDeactivation',
+                            'StorefrontGetWebsite',
+                            'StorefrontGetInvoiceCollection',
+                            'StorefrontGetInvoice',
+                            'StorefrontGetProductCollection',
+                            'StorefrontGetProduct',
+                            'StorefrontPostReadyToPay',
+                            'StorefrontGetPaymentInstrumentSetup',
+                            'StorefrontPostPaymentInstrumentSetup',
+                            'StorefrontPostPreviewPurchase',
+                            'StorefrontGetCashierRequest',
+                            'StorefrontGetCashierStrategy',
+                        ]
+                    }],
+                    customClaims: {
+                        websiteId: 'pokemon.nintendo.com',
+                        cashierRequestId: 'cash_req_01H0QQ5TD4BCT0Z4XVG3R1D3B6',
+                    }
+                }
+            });
+            log(chalk.green(jwt));
         } catch (err) {
             return log(err);
         }

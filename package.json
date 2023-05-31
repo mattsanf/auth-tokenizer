@@ -15,6 +15,6 @@
     "commander": "^3.0.2",
     "dotenv": "^8.2.0",
     "open": "^7.0.0",
-    "rebilly-js-sdk": "^15.1.0"
+    "rebilly-js-sdk": "^47.14.2"
   }
 }
