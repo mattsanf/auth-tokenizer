@@ -1,20 +1,19 @@
 {
   "name": "auth-tokenizer",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Simple Rebilly Auth Tokenizer for fast development",
   "main": "index.js",
   "scripts": {
-    "go": "node index.js"
+    "go": "dotenvx run --env-file=.env --env-file=.env.local --overload -- node index.js"
   },
-  "repository": "https://github.com/Teknologica/auth-tokenizer.git",
-  "author": "Teknologica <andrei@ilabsinc.com>",
+  "repository": "https://github.com/mattsanf/auth-tokenizer.git",
+  "author": "mattsanf",
   "license": "MIT",
   "private": true,
   "dependencies": {
+    "@dotenvx/dotenvx": "^0.29.1",
     "chalk": "^2.4.2",
     "commander": "^3.0.2",
-    "dotenv": "^8.2.0",
-    "open": "^7.0.0",
     "rebilly-js-sdk": "^47.14.2"
   }
 }
