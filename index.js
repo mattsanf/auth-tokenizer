@@ -3,6 +3,7 @@ const chalk = require('chalk');
 const open = require('open');
 const config = require('dotenv').config();
 const program = require('commander');
+const permissions = require('./permissions/instruments');
 
 const {parsed: {API_KEY = null, TARGET_URL = null, API_URL = null}} = config;
 const log = console.log;
@@ -39,14 +40,15 @@ if (program.open) {
     announce('Open Pre-Existing');
     // TODO
 } else {
-    if (!program.customerId) {
-        return log(chalk.red('No customer ID provided'));
-    }
+    // if (!program.customerId) {
+    //     return log(chalk.red('No customer ID provided'));
+    // }
     (async () => {
         try {
             const data = {
                 mode: 'passwordless',
-                customerId: program.customerId,
+                // customerId: program.customerId,
+                customerId: 'cus_01H78BQQS5WH64DVNM67N479NM',
             };
             const {fields: {token}} = await api.customerAuthentication.login({data});
             announce('Creating Token...');
@@ -60,39 +62,11 @@ if (program.open) {
                             organizationId: [
                                 '0a2540d2-2285-414d-a677-868bde7e442f'
                             ],
-                            cashierRequestId: [
-                                'cash_req_01H0QQ5TD4BCT0Z4XVG3R1D3B6'
-                            ]
                         },
-                        permissions: [
-                            'PostToken',
-                            'PostDigitalWalletValidation',
-                            'StorefrontGetAccount',
-                            'StorefrontPatchAccount',
-                            'StorefrontPostPayment',
-                            'StorefrontGetTransactionCollection',
-                            'StorefrontGetTransaction',
-                            'StorefrontGetPaymentInstrumentCollection',
-                            'StorefrontPostPaymentInstrument',
-                            'StorefrontGetPaymentInstrument',
-                            'StorefrontPatchPaymentInstrument',
-                            'StorefrontPostPaymentInstrumentDeactivation',
-                            'StorefrontGetWebsite',
-                            'StorefrontGetInvoiceCollection',
-                            'StorefrontGetInvoice',
-                            'StorefrontGetProductCollection',
-                            'StorefrontGetProduct',
-                            'StorefrontPostReadyToPay',
-                            'StorefrontGetPaymentInstrumentSetup',
-                            'StorefrontPostPaymentInstrumentSetup',
-                            'StorefrontPostPreviewPurchase',
-                            'StorefrontGetCashierRequest',
-                            'StorefrontGetCashierStrategy',
-                        ]
+                        permissions: permissions
                     }],
                     customClaims: {
-                        websiteId: 'pokemon.nintendo.com',
-                        cashierRequestId: 'cash_req_01H0QQ5TD4BCT0Z4XVG3R1D3B6',
+                        websiteId: 'pokemon.nintendo.com'
                     }
                 }
             });
